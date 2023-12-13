@@ -325,7 +325,7 @@ class Livox_laser
         int idx = pt_infos->idx;
         pt_infos->pt_type |= pt_type;
 
-        if ( neighbor_count > 0 )
+        if ( neighbor_count > 0 ) //检查是否需要为邻居点添加相同的掩码，neighbor_count 参数表示要考虑的邻居点数量。
         {
             for ( int i = -neighbor_count; i < neighbor_count; i++ )
             {
@@ -458,7 +458,7 @@ class Livox_laser
     int projection_scan_3d_2d( pcl::PointCloud< T > &laserCloudIn, std::vector< float > &scan_id_index )
     {
 
-        unsigned int pts_size = laserCloudIn.size();
+        unsigned int pts_size = laserCloudIn.size(); //输入点云大小
         m_pts_info_vec.clear();
         m_pts_info_vec.resize( pts_size );
         m_raw_pts_vec.resize( pts_size );
@@ -486,23 +486,23 @@ class Livox_laser
                  !std::isfinite( laserCloudIn.points[ idx ].y ) ||
                  !std::isfinite( laserCloudIn.points[ idx ].z ) )
             {
-                add_mask_of_point( pt_info, e_pt_nan );
+                add_mask_of_point( pt_info, e_pt_nan ); // e_pt_nan = 0x0001 << 5
                 continue;
             }
 
             if ( laserCloudIn.points[ idx ].x == 0 )
             {
-                if ( idx == 0 )
+                if ( idx == 0 ) //如果点云中第一个点的 x 坐标为零，则手动设置 pt_2d_img 和 polar_dis_sq2
                 {
                     // TODO: handle this case.
                     screen_out << "First point should be normal!!!" << std::endl;
 
                     pt_info->pt_2d_img << 0.01, 0.01;
                     pt_info->polar_dis_sq2 = 0.0001;
-                    add_mask_of_point( pt_info, e_pt_000 );
+                    add_mask_of_point( pt_info, e_pt_000 ); // e_pt_000 = 0x0001 << 0
                     //return 0;
                 }
-                else
+                else // 如果不是第一个点，将当前点的 pt_2d_img 和 polar_dis_sq2 设置为前一个点的对应值
                 {
                     pt_info->pt_2d_img = m_pts_info_vec[ idx - 1 ].pt_2d_img;
                     pt_info->polar_dis_sq2 = m_pts_info_vec[ idx - 1 ].polar_dis_sq2;
@@ -529,7 +529,7 @@ class Livox_laser
             if ( idx >= 1 )
             {
                 float dis_incre = pt_info->polar_dis_sq2 - m_pts_info_vec[ idx - 1 ].polar_dis_sq2;
-
+                // 根据相邻两个点之间的极坐标距离变化情况，判断点云中是否需要进行切割（split）
                 if ( dis_incre > 0 ) // far away from zero
                 {
                     pt_info->polar_direction = 1;
@@ -542,7 +542,7 @@ class Livox_laser
 
                 if ( pt_info->polar_direction == -1 && m_pts_info_vec[ idx - 1 ].polar_direction == 1 )
                 {
-                    if ( edge_idx.size() == 0 || ( idx - split_idx[ split_idx.size() - 1 ] ) > 50 )
+                    if ( edge_idx.size() == 0 split_idx ( idx - split_idx[ split_idx.size() - 1 ] ) > 50 )  // std::vector< int > edge_idx, split_idx
                     {
                         split_idx.push_back( idx );
                         edge_idx.push_back( idx );
