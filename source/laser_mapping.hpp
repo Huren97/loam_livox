@@ -632,7 +632,7 @@ class Laser_mapping
 
     Data_pair *get_data_pair( const double &time_stamp )
     {
-        std::map<double, Data_pair *>::iterator it = m_map_data_pair.find( time_stamp );
+        std::map<double, Data_pair *>::iterator it = m_map_data_pair.find( time_stamp ); //std::map<double, Data_pair *>
         if ( it == m_map_data_pair.end() )
         {
             Data_pair *date_pair_ptr = new Data_pair();
