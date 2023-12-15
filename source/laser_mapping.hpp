@@ -1574,7 +1574,7 @@ class Laser_mapping
         laserCloudFullRes3.header.frame_id = "camera_init";
         m_pub_laser_cloud_full_res.publish( laserCloudFullRes3 ); //single_frame_with_pose_tranfromed
 
-        if ( PUB_DEBUG_INFO )
+        if ( PUB_DEBUG_INFO )  // 发布debug信息
         {
             pcl::PointCloud<PointType> pc_feature_pub_corners, pc_feature_pub_surface;
             sensor_msgs::PointCloud2   laserCloudMsg;
