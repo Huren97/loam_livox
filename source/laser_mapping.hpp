@@ -1380,7 +1380,7 @@ class Laser_mapping
         int laser_corner_pt_num = laserCloudCornerStack->points.size();
         int laser_surface_pt_num = laserCloudSurfStack->points.size();
 
-        if ( m_if_save_to_pcd_files && PCD_SAVE_RAW )
+        if ( m_if_save_to_pcd_files && PCD_SAVE_RAW )  // 逻辑"与"
         {
             m_pcl_tools_raw.save_to_pcd_files( "raw", current_laser_cloud_full, m_current_frame_index );
         }
