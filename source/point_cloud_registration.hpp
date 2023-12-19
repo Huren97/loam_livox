@@ -128,10 +128,10 @@ class Point_cloud_registration
   float refine_blur( float in_blur, const float &min_blur, const float &max_blur )
   {
       float res = 1.0;
-      if ( m_if_motion_deblur )
+      if ( m_if_motion_deblur )  // 如果进行运动补偿
       {
           res = ( in_blur - min_blur ) / ( max_blur - min_blur );
-          if ( !std::isfinite( res ) || res > 1.0)
+          if ( !std::isfinite( res ) || res > 1.0)  // 判断如果res是有限数字，或者是大于1
               return 1.0;
           else
               return res;
@@ -619,14 +619,16 @@ class Point_cloud_registration
       hat( 2, 1 ) = angle_axis( 0 );
   };
 
-  void pointAssociateToMap( PointType const *const pi, PointType *const po,
-                            double interpolate_s = 1.0, int if_undistore = 0 )
+  void pointAssociateToMap( PointType const *const pi,  // 是一个指向常量的指针，指向的是PointType类型的常量
+                            PointType *const po,
+                            double interpolate_s = 1.0, 
+                            int if_undistore = 0 )
   {
       Eigen::Vector3d point_curr( pi->x, pi->y, pi->z );
       Eigen::Vector3d point_w;
-      if ( m_if_motion_deblur == 0 || if_undistore == 0 || interpolate_s == 1.0 )
+      if ( m_if_motion_deblur == 0 || if_undistore == 0 || interpolate_s == 1.0 )  // 三个条件中的任意一个成立（即为真），则条件成立。
       {
-          point_w = m_q_w_curr * point_curr + m_t_w_curr;
+          point_w = m_q_w_curr * point_curr + m_t_w_curr;   // m_q_w_curr为Eigen::Quaterniond类型; m_t_w_curr为Eigen::Vector3d 类型;
       }
       else
       {
@@ -635,13 +637,13 @@ class Point_cloud_registration
               screen_printf( "Input interpolate_s = %.5f\r\n", interpolate_s );
           }
 
-          if ( 1 ) // Using rodrigues for fast compute.
+          if ( 1 ) // Using rodrigues for fast compute.使用罗德里格斯公式计算
           {
               //https://en.wikipedia.org/wiki/Rodrigues%27_rotation_formula
               Eigen::Vector3d             interpolate_T = m_t_w_incre * ( interpolate_s * BLUR_SCALE );
               double                      interpolate_R_theta = m_interpolatation_theta * interpolate_s;
               Eigen::Matrix<double, 3, 3> interpolate_R_mat;
-
+              // R=I+sin(θ)K+(1−cos(θ))K^2
               interpolate_R_mat = Eigen::Matrix3d::Identity() + sin( interpolate_R_theta ) * m_interpolatation_omega_hat + ( 1 - cos( interpolate_R_theta ) ) * m_interpolatation_omega_hat_sq2;
               point_w = m_q_w_last * ( interpolate_R_mat * point_curr + interpolate_T ) + m_t_w_last;
           }
