@@ -632,6 +632,7 @@ class Laser_mapping
 
     Data_pair *get_data_pair( const double &time_stamp )
     {
+        //end()并不是最后一个元素，最后一个元素在end()-1里。!==*.end(),说明还没走到末尾就找到这个元素，如果==*.end()，则说明到了末尾还没有找到，如果找到的话，那么这个it的位置表示第一次出现1的位置
         std::map<double, Data_pair *>::iterator it = m_map_data_pair.find( time_stamp ); //std::map<double, Data_pair *>
         if ( it == m_map_data_pair.end() )
         {
